@@ -1,0 +1,73 @@
+---
+import { site, localizedPath, type Locale } from '../../lib/site';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const p = (path: string) => localizedPath(path, locale);
+---
+
+<footer class="footer" data-testid="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="t-eyebrow">Runestone Construction</p>
+      <p class="t-h4">{site.shortName}</p>
+      <p class="t-small">Florida Contractor License {site.license}</p>
+      <p class="t-small">Serving {site.area}</p>
+    </div>
+    <div>
+      <p class="t-h4">Contact</p>
+      <p><a href={site.phoneHref}>{site.phone}</a></p>
+      {site.emails.map((email) => (
+        <p class="t-small"><a href={`mailto:${email}`}>{email}</a></p>
+      ))}
+    </div>
+    <div>
+      <p class="t-h4">Explore</p>
+      <p><a href={p('/about')}>About</a></p>
+      <p><a href={p('/services')}>Services</a></p>
+      <p><a href={p('/projects')}>Projects</a></p>
+      <p><a href={p('/blog')}>Blog</a></p>
+      <p><a href={p('/contact')}>Contact</a></p>
+    </div>
+  </div>
+  <div class="wrap legal t-caption">
+    © {new Date().getFullYear()} {site.name}. All rights reserved.
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding-block: 3rem 2rem;
+  }
+
+  .footer a {
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: var(--sand);
+  }
+
+  .grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .legal {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
+    opacity: 0.7;
+  }
+
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+</style>

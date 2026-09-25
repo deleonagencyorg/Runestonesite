@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://runestoneconstruction.com/sitemap-index.xml

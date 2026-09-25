@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LeadForm from '../components/organisms/LeadForm';
+import { site } from '../lib/site';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Tell us about your construction project in Southwest Florida. Call or send a project inquiry."
+>
+  <section class="section">
+    <div class="wrap grid">
+      <div>
+        <p class="t-eyebrow">Contact</p>
+        <h1 class="t-h1">Have a project in mind?</h1>
+        <p class="t-lead">
+          Whether you’re considering a custom home, multifamily development, commercial project, or
+          another opportunity, we’d like to hear about it.
+        </p>
+        <p>
+          <a href={site.phoneHref}>{site.phone}</a>
+        </p>
+        {site.emails.map((email) => (
+          <p class="t-small"><a href={`mailto:${email}`}>{email}</a></p>
+        ))}
+        <p class="t-small">Florida Contractor License {site.license}</p>
+        <p class="t-small">Serving {site.cities.join(', ')}</p>
+      </div>
+      <div id="lead-form">
+        <LeadForm client:load locale="en" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: start;
+    }
+  }
+</style>

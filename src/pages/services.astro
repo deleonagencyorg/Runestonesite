@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaGroup from '../components/molecules/CtaGroup.astro';
+import { site } from '../lib/site';
+---
+
+<BaseLayout
+  title="Services"
+  description="Custom residential, multifamily, commercial construction, and construction management in Southwest Florida."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="t-eyebrow">What We Build</p>
+      <h1 class="t-h1">Construction services across Southwest Florida</h1>
+      <p class="t-lead">
+        Four primary disciplines—delivered with the same standard of quality and communication.
+      </p>
+
+      <div class="list">
+        {site.services.map((service) => (
+          <article id={service.slug}>
+            <h2 class="t-h2">{service.title}</h2>
+            <p class="t-body">{service.summary}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="mt">
+        <CtaGroup formHref="/contact#lead-form" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .list {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: 3rem;
+  }
+
+  .list article {
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--sand) 40%, transparent);
+  }
+
+  .list .t-h2 {
+    margin-bottom: 0.15rem;
+  }
+
+  .mt {
+    margin-top: 2.5rem;
+  }
+</style>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#1f1a17"/>
+  <text x="80" y="120" fill="#a07f5a" font-family="Georgia, serif" font-size="28" letter-spacing="6">PROCESS VIDEO POSTER</text>
+  <rect x="200" y="280" width="1200" height="520" fill="#8b1e1e" opacity="0.25"/>
+</svg>

@@ -29,6 +29,7 @@ Build a lead-generation marketing site for a Southwest Florida general contracto
 | Media | Stock video/images + MD placeholders; swap-ready paths |
 | Host | Vercel (static Astro); `vercel-optimize` after traffic exists |
 | Motion | Approach 2: GSAP + ScrollTrigger + video scrub on desktop process |
+| Typography | Cinzel (display) + Outfit (sans); reglas §6.2 |
 
 ---
 
@@ -151,9 +152,124 @@ Avoid generic AI palettes (purple gradients, cream+terracotta clichés, glow sta
 
 ### 6.2 Typography
 
-- **Display/brand:** elegant serif (wordmark-adjacent)  
-- **UI/body:** clean sans (not Inter/Roboto/Arial/system default stacks as the brand face)  
-- Hierarchy: brand > one headline > one support line in first viewport  
+Perfil del logo: **capitales romanas modernas** (RUNESTONE: sans de alto contraste, geometría limpia) + **label arquitectónico** (CONSTRUCTION: sans en mayúsculas, tracking amplio, color `--sand`). El sitio replica ese dúo: display inscriptional para títulos de marca; sans geométrica contemporánea para UI y lectura.
+
+#### Families (Google Fonts, self-host en Astro)
+
+| Token | Familia | Rol |
+|-------|---------|-----|
+| `--font-display` | **Cinzel** (wght 400–700) | Marca, H1–H3, pull quotes, números de proceso |
+| `--font-sans` | **Outfit** (wght 300–600) | Body, nav, forms, botones, H4+, captions |
+| `--font-mono` | system ui-monospace (opcional) | Solo código/debug; no en marketing |
+
+**Por qué:** Cinzel evoca el corte lapidario/elegante del wordmark sin copiar el glifo R. Outfit aporta modernidad y legibilidad (no Inter/Roboto/Arial).
+
+Fallback stacks:
+```css
+--font-display: "Cinzel", "Times New Roman", serif;
+--font-sans: "Outfit", "Helvetica Neue", sans-serif;
+```
+(Cinzel es inscriptional con remates mínimos; visualmente alinea al logo mejor que una serif editorial tipo Playfair.)
+
+#### Escala fluida (mobile → desktop)
+
+| Token | Size | Line-height | Letter-spacing | Weight | Familia |
+|-------|------|-------------|----------------|--------|---------|
+| `--text-display` | `clamp(2.5rem, 6vw, 4.5rem)` | 1.05 | `0.04em` | 600 | display |
+| `--text-h1` | `clamp(2rem, 4.5vw, 3.25rem)` | 1.1 | `0.03em` | 600 | display |
+| `--text-h2` | `clamp(1.75rem, 3vw, 2.5rem)` | 1.15 | `0.02em` | 600 | display |
+| `--text-h3` | `clamp(1.35rem, 2vw, 1.75rem)` | 1.2 | `0.02em` | 500–600 | display |
+| `--text-h4` | `1.125rem`–`1.25rem` | 1.3 | `0.01em` | 500 | sans |
+| `--text-lead` | `clamp(1.125rem, 1.5vw, 1.35rem)` | 1.5 | `0` | 300–400 | sans |
+| `--text-body` | `1rem` (16px) | 1.65 | `0` | 400 | sans |
+| `--text-small` | `0.875rem` | 1.5 | `0.01em` | 400 | sans |
+| `--text-caption` | `0.75rem` | 1.4 | `0.02em` | 400 | sans |
+| `--text-eyebrow` | `0.75rem`–`0.8125rem` | 1.2 | `0.28em` | 500 | sans |
+| `--text-button` | `0.8125rem`–`0.875rem` | 1 | `0.14em` | 500–600 | sans |
+| `--text-nav` | `0.8125rem` | 1 | `0.12em` | 500 | sans |
+| `--text-step-num` | `clamp(3rem, 8vw, 6rem)` | 1 | `0.02em` | 400 | display |
+
+Max width de medida: body/lead **`65ch`**; títulos pueden ir más anchos en hero.
+
+#### Reglas de uso (obligatorias)
+
+**Eyebrow / overline** (`--text-eyebrow`)
+- Siempre `text-transform: uppercase`; color `--sand`
+- Tracking amplio (como “CONSTRUCTION” del logo)
+- Una sola línea corta (“Our Process”, “Southwest Florida”)
+- Nunca sustituye a un H1; va **encima** del título de sección
+
+**H1 — página / hero** (`--text-h1` o `--text-display` solo en home hero)
+- Familia display; color `--ink` (o `--paper` sobre video)
+- Máx. **2 líneas** en desktop; **3** en mobile
+- Una sola H1 por página (SEO)
+- Hero: brand/logo puede ser imagen; el H1 es el mensaje, no la palabra “Runestone” repetida si el logo ya está
+
+**H2 — sección** (`--text-h2`)
+- Una H2 por bloque de sección; tono afirmativo (“Built on Strong Foundations”)
+- Si hay eyebrow, la H2 no lleva tracking extremo (el eyebrow ya aporta el gesto logo)
+
+**H3 — subsección / card title** (`--text-h3`)
+- Display; nombres de servicio, pasos del proceso, títulos de proyecto en cards
+- En process steps: número grande (`--text-step-num`, `--brand-stone` o `--sand`) + H3 del nombre del paso
+
+**H4 — anidado / form groups** (`--text-h4`)
+- Sans (no display): más UI que marca
+- Usar en formularios, footers densos, listas de valores (Integrity, Quality…)
+
+**Lead / subtítulo** (`--text-lead`)
+- Inmediatamente bajo H1/H2; **1–2 frases** máximo
+- Weight 300–400; color `--ink` a ~85% o `--stone-muted` oscuro
+- No mayúsculas; no tracking amplio
+
+**Párrafo / body** (`--text-body`)
+- Outfit 400; color `--ink`
+- Espaciado entre párrafos ~`1em`; sin justificado (izquierda)
+- En About/Mission: bloques cortos; evitar muros > ~120 palabras seguidas sin subhead
+
+**Small / meta** (`--text-small`)
+- Fechas de blog, ubicación de proyecto, “License CGC…”
+- Color `--stone-muted`
+
+**Caption** (`--text-caption`)
+- Pie de foto / crédito de galería; nunca competir con H3
+
+**Botones y nav** (`--text-button` / `--text-nav`)
+- Uppercase + tracking moderado (menos que eyebrow)
+- Primario: fondo `--brand-stone`, texto `--paper`
+- Secundario/outline: borde `--ink` o `--sand`, texto `--ink`
+- Nav: no bold extremo; estado activo con `--brand-stone` o underline sand
+
+**Testimonial quote**
+- Cita: display o lead ampliado (`--text-lead`–`--text-h3`); itálica opcional solo en la cita
+- Atribución: `--text-small` + nombre en weight 500; rol en `--sand` o muted
+
+#### Prohibiciones tipográficas
+
+- No Inter, Roboto, Open Sans, Arial, system-ui como cara de marca
+- No más de **dos familias** de marketing (display + sans)
+- No all-caps en párrafos ni en H1 largos (> ~40 caracteres → title case / sentence case)
+- No letter-spacing negativo en display
+- No mezclar pesos al azar: display usa 500–600; body 300–400; UI 500–600
+
+#### Mapa componente → token
+
+| Superficie | Token tipográfico |
+|------------|-------------------|
+| Logo wordmark (img) | — (asset); no recrear con CSS salvo fallback texto Cinzel |
+| Hero headline | `--text-display` / `--text-h1` |
+| Hero support | `--text-lead` |
+| Section label | `--text-eyebrow` |
+| Section title | `--text-h2` |
+| Service / project card title | `--text-h3` |
+| Card summary | `--text-small` o `--text-body` |
+| Blog post title (list) | `--text-h3` |
+| Blog post title (article) | `--text-h1` |
+| Article body | `--text-body` (+ H2/H3 display en MD) |
+| Form labels | `--text-small`, weight 500 |
+| Footer legal | `--text-caption` |
+
+Implementación: tokens en `src/styles/tokens.css`; tipografía aplicada vía clases utilitarias mínimas (`.t-display`, `.t-h1`… `.t-eyebrow`) o atributos en átomos (`Heading`, `Text`) — sin framework CSS pesado.
 
 ### 6.3 Motion & atmosphere
 

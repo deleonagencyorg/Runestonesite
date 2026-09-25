@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaGroup from '../components/molecules/CtaGroup.astro';
+import ProcessScrub from '../components/organisms/ProcessScrub.astro';
+import LeadForm from '../components/organisms/LeadForm';
+import { site } from '../lib/site';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .slice(0, 6);
+
+const testimonials = projects
+  .map((p) => p.data.testimonial)
+  .filter(Boolean);
+---
+
+<BaseLayout
+  title="Runestone Construction | Southwest Florida General Contractor"
+  description="Custom residential, multifamily, and commercial construction throughout Southwest Florida."
+>
+  <ProcessScrub />
+
+  <section class="section" id="services" data-testid="services-section">
+    <div class="wrap" data-reveal>
+      <p class="t-eyebrow">Services</p>
+      <h2 class="t-h2">Four disciplines. One standard.</h2>
+      <div class="services">
+        {site.services.map((service) => (
+          <article data-reveal>
+            <h3 class="t-h3">{service.title}</h3>
+            <p class="t-body">{service.summary}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt">
+        <CtaGroup formHref="#lead-form" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section why" data-testid="why-section">
+    <div class="wrap" data-reveal>
+      <p class="t-eyebrow">Why Runestone</p>
+      <h2 class="t-h2">More than a contractor. A partner in the building process.</h2>
+      <p class="t-lead">
+        We bring organization, communication, quality, and execution together across every phase.
+      </p>
+      <p class="tagline t-h3">One Project. One Team. One Standard.</p>
+    </div>
+  </section>
+
+  <section class="section" data-testid="projects-strip">
+    <div class="wrap">
+      <p class="t-eyebrow">Projects</p>
+      <h2 class="t-h2">Selected work</h2>
+      <div class="cards">
+        {projects.map((project) => (
+          <a class="card" href={`/projects/${project.id}`}>
+            <div class="thumb" style={`background-image:url('${project.data.cover}')`}></div>
+            <h3 class="t-h3">{project.data.title}</h3>
+            <p class="t-small">
+              {project.data.location} · {project.data.year}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {testimonials.length > 0 && (
+    <section class="section" data-testid="testimonials">
+      <div class="wrap">
+        <p class="t-eyebrow">Testimonials</p>
+        <h2 class="t-h2">What clients say</h2>
+        <div class="quotes">
+          {testimonials.map((t) => (
+            <blockquote>
+              <p class="t-lead">“{t!.quote}”</p>
+              <footer class="t-small">
+                <strong>{t!.author}</strong> · {t!.role}
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section cta-final" id="lead-form" data-testid="home-lead">
+    <div class="wrap narrow">
+      <p class="t-eyebrow">Have a Project in Mind?</p>
+      <h2 class="t-h2">Let’s build something exceptional</h2>
+      <p class="t-lead">
+        Tell us about your project and our team will contact you to discuss the next steps.
+      </p>
+      <p class="phone-line">
+        Or call <a href={site.phoneHref}>{site.phone}</a>
+      </p>
+      <LeadForm client:load locale="en" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .services {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 2rem;
+  }
+
+  .services article {
+    padding-top: 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--sand) 40%, transparent);
+  }
+
+  .services .t-h3 {
+    margin-bottom: 0.15rem;
+  }
+
+  .mt {
+    margin-top: 2rem;
+  }
+
+  .why {
+    background: color-mix(in srgb, var(--sand) 10%, var(--paper));
+  }
+
+  .tagline {
+    margin-top: 1.5rem;
+    color: var(--brand-stone);
+  }
+
+  .cards {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .card {
+    text-decoration: none;
+  }
+
+  .thumb {
+    aspect-ratio: 4 / 3;
+    background: #2a2420 center / cover;
+    margin-bottom: 0.75rem;
+  }
+
+  .quotes {
+    display: grid;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  blockquote {
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--brand-stone);
+  }
+
+  .cta-final {
+    background: #fff;
+  }
+
+  .narrow {
+    max-width: 42rem;
+  }
+
+  .phone-line {
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .services {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

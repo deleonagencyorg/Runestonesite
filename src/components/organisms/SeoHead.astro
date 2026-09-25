@@ -1,0 +1,25 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title,
+  description = 'Southwest Florida general contractor for residential, multifamily, and commercial construction.',
+  canonical,
+} = Astro.props;
+
+const fullTitle = title.includes('Runestone')
+  ? title
+  : `${title} | Runestone Construction`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{canonical && <link rel="canonical" href={canonical} />}
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />

@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaGroup from '../components/molecules/CtaGroup.astro';
+import { site } from '../lib/site';
+
+const values = [
+  {
+    title: 'Integrity',
+    body: 'We communicate openly, operate responsibly, and stand behind our work.',
+  },
+  {
+    title: 'Quality',
+    body: 'High standards from structural components to the smallest finishing details.',
+  },
+  {
+    title: 'Communication',
+    body: 'Clear, consistent updates so clients understand what is happening with their project.',
+  },
+  {
+    title: 'Accountability',
+    body: 'Ownership of schedules, budgets, workmanship, and successful execution.',
+  },
+  {
+    title: 'Attention to Detail',
+    body: 'Hundreds of details executed correctly, with precision and purpose.',
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Who we are, our mission, vision, and values as a Southwest Florida general contractor."
+>
+  <section class="section">
+    <div class="wrap">
+      <p class="t-eyebrow">Who We Are</p>
+      <h1 class="t-h1">Built for lasting quality in Southwest Florida</h1>
+      <p class="t-lead">
+        Runestone Construction is a Southwest Florida general contractor focused on delivering
+        high-quality residential, multifamily, and commercial construction.
+      </p>
+      <p class="t-body">
+        We believe a successful construction project begins long before the first wall is built. Our
+        approach combines thoughtful planning, experienced project coordination, quality materials,
+        dependable trade partners, and consistent communication throughout every phase.
+      </p>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap dual">
+      <div>
+        <p class="t-eyebrow">Our Mission</p>
+        <h2 class="t-h2">Exceptional construction, every detail</h2>
+        <p class="t-body">
+          Deliver exceptional construction through quality workmanship, disciplined project
+          management, transparent communication, and attention to every detail.
+        </p>
+      </div>
+      <div>
+        <p class="t-eyebrow">Our Vision</p>
+        <h2 class="t-h2">Trusted across Southwest Florida</h2>
+        <p class="t-body">
+          Establish Runestone Construction as a trusted and recognized construction company known
+          for integrity, quality, innovation, and delivery from concept to completion.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="t-eyebrow">Built on Strong Foundations</p>
+      <h2 class="t-h2">Core values</h2>
+      <div class="values">
+        {values.map((v) => (
+          <article>
+            <h3 class="t-h4">{v.title}</h3>
+            <p class="t-body">{v.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt">
+        <CtaGroup formHref="/contact#lead-form" />
+      </div>
+      <p class="t-small mt">License {site.license}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .alt {
+    background: color-mix(in srgb, var(--sand) 10%, var(--paper));
+  }
+
+  .dual {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .values {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .mt {
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 800px) {
+    .dual {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .values {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

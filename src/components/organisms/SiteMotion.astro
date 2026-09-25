@@ -1,0 +1,98 @@
+---
+/**
+ * Site-wide smooth text reveals + button micro-interactions.
+ */
+---
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduce) {
+    const textNodes = gsap.utils.toArray<HTMLElement>(
+      'main .section .t-eyebrow, main .section .t-h1, main .section .t-h2, main .section .t-h3, main .section .t-h4, main .section .t-lead, main .section .t-body, main .section p, main .section li, main .section blockquote, main [data-reveal]',
+    );
+
+    textNodes.forEach((el) => {
+      if (el.closest('[data-process-root]')) return;
+      if (el.closest('[data-testid="home-hero"]')) return;
+
+      gsap.from(el, {
+        y: 28,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 92%',
+          toggleActions: 'play none none none',
+        },
+      });
+    });
+
+    gsap.utils
+      .toArray<HTMLElement>(
+        'main article .t-lead, main article .t-body, main article .prose p, main article blockquote',
+      )
+      .forEach((el) => {
+        gsap.from(el, {
+          y: 22,
+          duration: 0.7,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 92%',
+            toggleActions: 'play none none none',
+          },
+        });
+      });
+
+    gsap.utils
+      .toArray<HTMLElement>('main article .t-h1, main article .t-h2, main article .t-h3')
+      .forEach((el) => {
+        gsap.from(el, {
+          y: 30,
+          duration: 0.85,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 90%',
+            toggleActions: 'play none none none',
+          },
+        });
+      });
+
+    document.querySelectorAll<HTMLElement>('[data-btn], .btn').forEach((btn) => {
+      btn.addEventListener('pointerenter', () => {
+        gsap.to(btn, {
+          '--btn-lift': '-3px',
+          '--btn-scale': 1.03,
+          duration: 0.28,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        });
+      });
+      btn.addEventListener('pointerleave', () => {
+        gsap.to(btn, {
+          '--btn-lift': '0px',
+          '--btn-scale': 1,
+          duration: 0.32,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        });
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('header a, footer a').forEach((link) => {
+      link.addEventListener('pointerenter', () => {
+        gsap.to(link, { y: -1, duration: 0.18, ease: 'power2.out', overwrite: 'auto' });
+      });
+      link.addEventListener('pointerleave', () => {
+        gsap.to(link, { y: 0, duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+      });
+    });
+  }
+</script>

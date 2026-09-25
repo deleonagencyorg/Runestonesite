@@ -1,0 +1,23 @@
+---
+import Button from '../atoms/Button.astro';
+import { site } from '../../lib/site';
+
+interface Props {
+  formHref?: string;
+}
+
+const { formHref = '#lead-form' } = Astro.props;
+---
+
+<div class="cta-group" data-testid="cta-group">
+  <Button href={site.phoneHref} variant="primary">Call {site.phone}</Button>
+  <Button href={formHref} variant="secondary">Tell Us About Your Project</Button>
+</div>
+
+<style>
+  .cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

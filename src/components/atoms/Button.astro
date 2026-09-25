@@ -1,0 +1,112 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'onDark';
+}
+
+const { href, variant = 'primary' } = Astro.props;
+---
+
+<a class:list={['btn', variant]} href={href} data-btn>
+  <span class="label"><slot /></span>
+</a>
+
+<style>
+  .btn {
+    --btn-lift: 0px;
+    --btn-scale: 1;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.9rem 1.4rem;
+    font-family: var(--font-sans);
+    font-size: var(--text-button);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transform: translateY(var(--btn-lift)) scale(var(--btn-scale));
+    transition:
+      background 0.28s ease,
+      color 0.28s ease,
+      border-color 0.28s ease,
+      box-shadow 0.28s ease,
+      letter-spacing 0.28s ease,
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 22%) 48%,
+      transparent 62%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.55s ease;
+    pointer-events: none;
+  }
+
+  .btn:hover::after,
+  .btn:focus-visible::after {
+    transform: translateX(120%);
+  }
+
+  .btn:hover,
+  .btn:focus-visible {
+    letter-spacing: 0.18em;
+  }
+
+  .btn:active {
+    --btn-scale: 0.98;
+  }
+
+  .label {
+    position: relative;
+    z-index: 1;
+  }
+
+  .primary {
+    background: var(--brand-stone);
+    color: var(--paper);
+    box-shadow: 0 8px 24px rgb(139 30 30 / 18%);
+  }
+
+  .primary:hover,
+  .primary:focus-visible {
+    background: #6f1616;
+    box-shadow: 0 12px 28px rgb(139 30 30 / 32%);
+  }
+
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .secondary:hover,
+  .secondary:focus-visible {
+    border-color: var(--brand-stone);
+    color: var(--brand-stone);
+    box-shadow: 0 10px 24px rgb(0 0 0 / 8%);
+  }
+
+  .onDark {
+    background: transparent;
+    color: var(--paper);
+    border-color: color-mix(in srgb, var(--paper) 70%, transparent);
+  }
+
+  .onDark:hover,
+  .onDark:focus-visible {
+    border-color: var(--sand);
+    color: var(--sand);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 28%);
+  }
+</style>

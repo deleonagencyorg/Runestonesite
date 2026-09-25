@@ -1,0 +1,118 @@
+---
+import { site, localizedPath, type Locale } from '../../lib/site';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const p = (path: string) => localizedPath(path, locale);
+
+const links = [
+  { href: p('/about'), label: 'About' },
+  { href: p('/services'), label: 'Services' },
+  { href: p('/projects'), label: 'Projects' },
+  { href: p('/blog'), label: 'Blog' },
+  { href: p('/contact'), label: 'Contact' },
+];
+---
+
+<header class="header" data-testid="site-header">
+  <div class="wrap bar">
+    <a class="brand" href={p('/')} aria-label={site.shortName}>
+      <span class="brand-mark">R</span>
+      <span class="brand-text">
+        <span class="name">Runestone</span>
+        <span class="sub">Construction</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      {links.map((link) => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+    </nav>
+    <a class="phone" href={site.phoneHref}>{site.phone}</a>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid color-mix(in srgb, var(--sand) 35%, transparent);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.25rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--brand-stone);
+    line-height: 1;
+  }
+
+  .name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .sub {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--sand);
+  }
+
+  .nav {
+    display: none;
+    gap: 1.25rem;
+  }
+
+  .nav a {
+    font-size: var(--text-nav);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .nav a:hover {
+    color: var(--brand-stone);
+  }
+
+  .phone {
+    font-size: var(--text-nav);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 900px) {
+    .nav {
+      display: flex;
+    }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import Header from '../components/organisms/Header.astro';
+import Footer from '../components/organisms/Footer.astro';
+import SeoHead from '../components/organisms/SeoHead.astro';
+import SiteMotion from '../components/organisms/SiteMotion.astro';
+import { site } from '../lib/site';
+import type { Locale } from '../lib/site';
+import '@fontsource/cinzel/400.css';
+import '@fontsource/cinzel/600.css';
+import '@fontsource/cinzel/700.css';
+import '@fontsource/outfit/300.css';
+import '@fontsource/outfit/400.css';
+import '@fontsource/outfit/500.css';
+import '@fontsource/outfit/600.css';
+import '../styles/tokens.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale?: Locale;
+}
+
+const { title, description, locale = 'en' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'GeneralContractor',
+  name: site.name,
+  telephone: site.phone,
+  email: site.emails[0],
+  areaServed: site.cities.map((city) => ({
+    '@type': 'City',
+    name: city,
+  })),
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: 'FL',
+    addressCountry: 'US',
+  },
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SeoHead title={title} description={description} canonical={canonical} />
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body>
+    <Header locale={locale} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={locale} />
+    <a class="sticky-call" href={site.phoneHref} data-testid="sticky-call">
+      Call {site.phone}
+    </a>
+    <SiteMotion />
+  </body>
+</html>
+
+<style>
+  .sticky-call {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 50;
+    display: inline-flex;
+    padding: 0.85rem 1.1rem;
+    background: var(--brand-stone);
+    color: var(--paper);
+    text-decoration: none;
+    font-size: var(--text-button);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+  }
+
+  @media (min-width: 900px) {
+    .sticky-call {
+      display: none;
+    }
+  }
+</style>
