@@ -16,7 +16,7 @@ const { Content } = await render(project);
 const { testimonial } = project.data;
 ---
 
-<BaseLayout title={project.data.title} description={project.data.summary}>
+<BaseLayout noindex title={project.data.title} description={project.data.summary}>
   <article class="section">
     <div class="wrap">
       <p class="t-eyebrow">{project.data.type.replace('-', ' ')}</p>

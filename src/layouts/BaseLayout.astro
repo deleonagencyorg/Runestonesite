@@ -5,9 +5,19 @@ import SeoHead from '../components/organisms/SeoHead.astro';
 import SiteMotion from '../components/organisms/SiteMotion.astro';
 import { site } from '../lib/site';
 import type { Locale } from '../lib/site';
-import '@fontsource/cinzel/400.css';
+import {
+  articleNode,
+  breadcrumbNode,
+  contractorNode,
+  defaultDescription,
+  defaultKeywords,
+  faqPageNode,
+  graph,
+  ogImagePath,
+  webPageNode,
+  websiteNode,
+} from '../lib/seo';
 import '@fontsource/cinzel/600.css';
-import '@fontsource/cinzel/700.css';
 import '@fontsource/outfit/300.css';
 import '@fontsource/outfit/400.css';
 import '@fontsource/outfit/500.css';
@@ -17,28 +27,62 @@ import '../styles/tokens.css';
 interface Props {
   title: string;
   description?: string;
+  keywords?: string[];
   locale?: Locale;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  image?: string;
+  faq?: boolean;
+  published?: string;
+  crumb?: string;
 }
 
-const { title, description, locale = 'en' } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const {
+  title,
+  description = defaultDescription,
+  keywords = defaultKeywords,
+  locale = 'en',
+  noindex = false,
+  ogType = 'website',
+  image,
+  faq = false,
+  published,
+  crumb,
+} = Astro.props;
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'GeneralContractor',
-  name: site.name,
-  telephone: site.phone,
-  email: site.emails[0],
-  areaServed: site.cities.map((city) => ({
-    '@type': 'City',
-    name: city,
-  })),
-  address: {
-    '@type': 'PostalAddress',
-    addressRegion: 'FL',
-    addressCountry: 'US',
-  },
-};
+const origin = Astro.site?.origin ?? 'https://runestoneconstruction.com';
+const canonical = new URL(Astro.url.pathname, origin).toString();
+const imageUrl = new URL(image ?? ogImagePath, origin).toString();
+const fullTitle = title.includes('Runestone') ? title : `${title} | Runestone Construction`;
+const path = Astro.url.pathname || '/';
+const crumbs = [{ name: 'Home', path: '/' }];
+if (path.startsWith('/blog/') && path !== '/blog/') {
+  crumbs.push({ name: 'Blog', path: '/blog' });
+  crumbs.push({ name: crumb ?? title, path });
+} else if (path !== '/' && path !== '/es' && path !== '/es/') {
+  crumbs.push({ name: crumb ?? title, path });
+}
+
+const nodes = [
+  contractorNode(origin),
+  websiteNode(origin),
+  webPageNode({ origin, path, title: fullTitle, description }),
+  breadcrumbNode(origin, crumbs),
+];
+if (faq) nodes.push(faqPageNode());
+if (ogType === 'article' && published) {
+  nodes.push(
+    articleNode({
+      origin,
+      path,
+      title: fullTitle,
+      description,
+      datePublished: published,
+    }),
+  );
+}
+
+const schema = JSON.stringify(graph(nodes)).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -47,8 +91,17 @@ const schema = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/brand/favicon.png" />
-    <SeoHead title={title} description={description} canonical={canonical} />
-    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <SeoHead
+      title={title}
+      description={description}
+      keywords={keywords.join(', ')}
+      canonical={canonical}
+      image={imageUrl}
+      noindex={noindex}
+      ogType={ogType}
+      locale={locale}
+    />
+    <script type="application/ld+json" set:html={schema} />
   </head>
   <body>
     <Header locale={locale} />

@@ -5,7 +5,11 @@ import { getCollection } from 'astro:content';
 const projects = await getCollection('projects');
 ---
 
-<BaseLayout title="Projects" description="Selected residential, multifamily, and commercial projects in Southwest Florida.">
+<BaseLayout
+  noindex
+  title="Projects"
+  description="Selected residential, multifamily, and commercial projects in Southwest Florida."
+>
   <section class="section">
     <div class="wrap">
       <p class="t-eyebrow">Portfolio</p>

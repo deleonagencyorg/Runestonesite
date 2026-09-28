@@ -7,7 +7,17 @@ const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<BaseLayout title="Blog" description="Insights on construction planning, process, and Southwest Florida building.">
+<BaseLayout
+  title="Southwest Florida Construction Advice"
+  description="Planning notes for custom homes in Southwest Florida: budget, site, permitting, and how a licensed general contractor carries a project from concept to completion."
+  keywords={[
+    'custom home planning Southwest Florida',
+    'Naples home building process',
+    'Fort Myers construction advice',
+    'Runestone Construction blog',
+  ]}
+  crumb="Blog"
+>
   <section class="section">
     <div class="wrap">
       <p class="t-eyebrow">Insights</p>

@@ -1,0 +1,58 @@
+---
+import { faqs } from '../../lib/seo';
+---
+
+<section class="section faq" data-testid="faq">
+  <div class="wrap">
+    <p class="t-eyebrow">Questions</p>
+    <h2 class="t-h2">What owners ask before they build</h2>
+    <div class="list">
+      {
+        faqs.map((item) => (
+          <details>
+            <summary>{item.question}</summary>
+            <p class="t-body">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    background: color-mix(in srgb, var(--sand) 8%, var(--paper));
+  }
+
+  .list {
+    display: grid;
+    gap: 0;
+    margin-top: 1.5rem;
+    max-width: 46rem;
+    border-top: 1px solid color-mix(in srgb, var(--sand) 40%, transparent);
+  }
+
+  details {
+    border-bottom: 1px solid color-mix(in srgb, var(--sand) 40%, transparent);
+    padding-block: 0.95rem;
+  }
+
+  summary {
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--brand-stone);
+    outline-offset: 3px;
+  }
+
+  p {
+    margin: 0.7rem 0 0.25rem;
+    max-width: 42rem;
+  }
+</style>

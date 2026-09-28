@@ -15,14 +15,14 @@ function leadingNumber(name: string) {
 function altFromFile(name: string) {
   return name
     .replace(/^\d+\s*-\s*/, '')
-    .replace(/\.jpe?g$/i, '')
+    .replace(/\.(jpe?g|webp)$/i, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
 export function residenceGallery(): GalleryPhoto[] {
   const dir = join(process.cwd(), 'public/media/gallery');
-  const files = readdirSync(dir).filter((file) => /\.jpe?g$/i.test(file) && !file.startsWith('._'));
+  const files = readdirSync(dir).filter((file) => /\.webp$/i.test(file) && !file.startsWith('._'));
   const ranked = files
     .map((file) => ({ file, number: leadingNumber(file) }))
     .sort((a, b) => a.number - b.number || a.file.localeCompare(b.file));

@@ -5,6 +5,8 @@ import CtaGroup from '../components/molecules/CtaGroup.astro';
 import ProcessScrub from '../components/organisms/ProcessScrub.astro';
 import LeadForm from '../components/organisms/LeadForm';
 import { residenceGallery } from '../lib/gallery';
+import FaqList from '../components/organisms/FaqList.astro';
+import { defaultKeywords } from '../lib/seo';
 import { site } from '../lib/site';
 import { getCollection } from 'astro:content';
 
@@ -16,8 +18,10 @@ const testimonials = (await getCollection('projects'))
 ---
 
 <BaseLayout
-  title="Runestone Construction | Southwest Florida General Contractor"
-  description="Custom residential, multifamily, and commercial construction throughout Southwest Florida."
+  title="Custom Home Builder in Naples & Fort Myers | Runestone"
+  description="Florida licensed general contractor CGC1540643 for custom homes, multifamily, and commercial construction in Naples, Fort Myers, Cape Coral, and Southwest Florida."
+  keywords={[...defaultKeywords, 'Bonita Springs builder', 'Estero custom home', 'Marco Island contractor']}
+  faq
 >
   <ProcessScrub />
 
@@ -58,9 +62,10 @@ const testimonials = (await getCollection('projects'))
             <img
               src={preview.src}
               alt={preview.alt}
-              width="1200"
-              height="800"
+              width="1280"
+              height="720"
               loading="lazy"
+              fetchpriority="low"
               decoding="async"
             />
           </a>
@@ -99,6 +104,8 @@ const testimonials = (await getCollection('projects'))
       </div>
     </section>
   )}
+
+  <FaqList />
 
   <section class="section cta-final" id="lead-form" data-testid="home-lead">
     <div class="wrap narrow">

@@ -13,11 +13,11 @@ import CtaGroup from '../molecules/CtaGroup.astro';
   <video
     class="film"
     data-process-video
-    src="/media/process-placeholder.mp4"
-    poster="/media/process-poster.jpg"
+    data-src="/media/process-placeholder.mp4"
+    poster="/media/process-poster.webp"
     muted
     playsinline
-    preload="auto"
+    preload="none"
   >
   </video>
 
@@ -111,106 +111,129 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     let active = -1;
     let duration = 0;
     let heroOn = true;
+    let visible: 'hero' | number = 'hero';
+    let mode: 'idle' | 'out' | 'in' = 'idle';
+    let queued: 'hero' | number | null = null;
+    let generation = 0;
 
-    function bitsOf(slide: HTMLElement) {
-      return slide.querySelectorAll<HTMLElement>('[data-anim], .title-inner');
+    function clearSlide(slide: HTMLElement) {
+      gsap.killTweensOf(slide);
+      gsap.set(slide, { autoAlpha: 0, y: 0 });
+      slide.classList.remove('is-active');
     }
 
-    function showBits(slide: HTMLElement) {
-      gsap.set(bitsOf(slide), { autoAlpha: 1, y: 0, yPercent: 0, scale: 1, clearProps: 'transform' });
+    function nodesLeaving(next: 'hero' | number) {
+      const nodes: HTMLElement[] = [];
+      if (visible === 'hero') {
+        if (hero) nodes.push(hero);
+        return nodes;
+      }
+      const slide = slides[visible];
+      if (slide) nodes.push(slide);
+      if (next === 'hero' && intro) nodes.push(intro);
+      return nodes;
     }
 
-    function hideSlides() {
-      slides.forEach((slide) => {
+    function settle(gen: number) {
+      if (gen !== generation) return;
+      mode = 'idle';
+      if (queued !== null && queued !== visible) startOut();
+    }
+
+    function startIn(want: 'hero' | number, gen: number) {
+      if (gen !== generation) return;
+      mode = 'in';
+      visible = want;
+
+      if (want === 'hero') {
+        heroOn = true;
+        active = -1;
+        slides.forEach(clearSlide);
+        if (intro) gsap.set(intro, { autoAlpha: 0, y: 0 });
+        if (!hero) {
+          settle(gen);
+          return;
+        }
+        gsap.killTweensOf(hero);
+        gsap.fromTo(
+          hero,
+          { autoAlpha: 0, y: 18 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: reduce ? 0 : 0.55,
+            ease: 'power2.out',
+            overwrite: true,
+            onComplete: () => settle(gen),
+          },
+        );
+        return;
+      }
+
+      heroOn = false;
+      active = want;
+      if (label) label.textContent = titles[want] ?? '';
+      if (hero) gsap.set(hero, { autoAlpha: 0, y: 0 });
+      slides.forEach((slide, index) => {
+        if (index === want) return;
+        clearSlide(slide);
+      });
+
+      const slide = slides[want];
+      if (slide) {
+        slide.classList.add('is-active');
         gsap.killTweensOf(slide);
-        gsap.killTweensOf(bitsOf(slide));
-        slide.classList.remove('is-active');
-        gsap.set(slide, { autoAlpha: 0 });
-        showBits(slide);
-      });
-      active = -1;
-    }
-
-    function setHero(on: boolean) {
-      if (!hero || heroOn === on) return;
-      heroOn = on;
-      gsap.to(hero, {
-        autoAlpha: on ? 1 : 0,
-        y: on ? 0 : -28,
-        duration: reduce ? 0 : 0.45,
-        ease: 'power2.out',
-        overwrite: true,
-      });
-      if (intro) {
-        gsap.to(intro, {
-          autoAlpha: on ? 0 : 1,
-          y: on ? 12 : 0,
-          duration: reduce ? 0 : 0.4,
+      }
+      const introHidden = !intro || Number(gsap.getProperty(intro, 'autoAlpha')) < 0.9;
+      const incoming = [slide, introHidden ? intro : null].filter((node): node is HTMLElement => Boolean(node));
+      gsap.fromTo(
+        incoming,
+        { autoAlpha: 0, y: 16 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: reduce ? 0 : 0.55,
           ease: 'power2.out',
           overwrite: true,
-        });
-      }
-      if (on) hideSlides();
-    }
-
-    function animateIn(slide: HTMLElement) {
-      const bits = gsap.utils.toArray<HTMLElement>(bitsOf(slide));
-      gsap.killTweensOf(bits);
-      showBits(slide);
-      gsap.fromTo(
-        bits,
-        { y: mobile() ? 14 : 18 },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.55,
-          stagger: 0.05,
-          ease: 'power3.out',
-          overwrite: 'auto',
+          onComplete: () => settle(gen),
         },
       );
     }
 
-    function animateOut(slide: HTMLElement) {
-      const bits = bitsOf(slide);
-      gsap.to(bits, {
+    function startOut() {
+      const gen = ++generation;
+      const next = queued;
+      if (next === null) {
+        mode = 'idle';
+        return;
+      }
+      mode = 'out';
+      const nodes = nodesLeaving(next);
+      const finish = () => {
+        if (gen !== generation) return;
+        gsap.set(nodes, { autoAlpha: 0, y: 0 });
+        startIn(queued ?? next, gen);
+      };
+      if (!nodes.length || reduce) {
+        finish();
+        return;
+      }
+      gsap.killTweensOf(nodes);
+      gsap.to(nodes, {
         autoAlpha: 0,
-        y: -10,
-        duration: 0.28,
-        stagger: 0.02,
-        ease: 'power2.in',
-        overwrite: 'auto',
+        y: -14,
+        duration: 0.36,
+        ease: 'power2.inOut',
+        overwrite: true,
+        onComplete: finish,
       });
-      gsap.to(slide, { autoAlpha: 0, duration: 0.28, ease: 'power2.in', overwrite: 'auto' });
     }
 
-    function setSlide(index: number, animate = true) {
-      const next = Math.max(0, Math.min(slides.length - 1, index));
-      if (next === active) return;
-      const prev = active;
-      active = next;
-      if (label) label.textContent = titles[active] ?? '';
-
-      slides.forEach((slide, i) => {
-        const on = i === active;
-        slide.classList.toggle('is-active', on);
-        gsap.killTweensOf(slide);
-        gsap.killTweensOf(slide.querySelectorAll('[data-anim], .title-inner'));
-
-        if (!animate || reduce) {
-          gsap.set(slide, { autoAlpha: on ? 1 : 0 });
-          showBits(slide);
-          return;
-        }
-
-        if (i === prev && prev >= 0) animateOut(slide);
-        if (on) {
-          gsap.set(slide, { autoAlpha: 1 });
-          animateIn(slide);
-        } else if (i !== prev) {
-          gsap.set(slide, { autoAlpha: 0 });
-        }
-      });
+    function request(want: 'hero' | number) {
+      if (mode === 'idle' && want === visible) return;
+      queued = want;
+      if (mode === 'out') return;
+      startOut();
     }
 
     function seekVideo(t: number) {
@@ -225,12 +248,11 @@ import CtaGroup from '../molecules/CtaGroup.astro';
       seekVideo(clamped * duration);
 
       if (clamped < heroEnd()) {
-        setHero(true);
+        request('hero');
       } else {
-        setHero(false);
         const stepP = (clamped - heroEnd()) / (1 - heroEnd());
         const idx = Math.min(slides.length - 1, Math.floor(stepP * slides.length));
-        setSlide(idx, true);
+        request(idx);
       }
 
       if (cue && !reduce) {
@@ -244,7 +266,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
         .forEach((st) => st.kill());
 
       if (reduce) {
-        setHero(true);
+        if (hero) gsap.set(hero, { autoAlpha: 1, y: 0 });
         video.pause();
         return;
       }
@@ -267,13 +289,18 @@ import CtaGroup from '../molecules/CtaGroup.astro';
         start: 'top top',
         end: () => `+=${scrollLen()}`,
         pin: true,
-        scrub: mobile() ? 0.45 : 0.85,
+        scrub: mobile() ? 0.7 : 1.15,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => onProgress(self.progress),
       });
 
-      hideSlides();
+      slides.forEach(clearSlide);
+      if (intro) gsap.set(intro, { autoAlpha: 0, y: 0 });
+      if (hero) gsap.set(hero, { autoAlpha: 1, y: 0 });
+      visible = 'hero';
+      mode = 'idle';
+      queued = null;
       onProgress(0);
     }
 
@@ -287,11 +314,20 @@ import CtaGroup from '../molecules/CtaGroup.astro';
       ScrollTrigger.refresh();
     }
 
+    const startVideo = () => {
+      const pending = video.dataset.src;
+      if (pending && !video.getAttribute('src')) video.src = pending;
+      video.preload = 'auto';
+      video.load();
+    };
+    if ('requestIdleCallback' in window) requestIdleCallback(startVideo, { timeout: 700 });
+    else window.addEventListener('load', () => window.setTimeout(startVideo, 40), { once: true });
+
     if (video.readyState >= 1) ready();
     else video.addEventListener('loadedmetadata', ready, { once: true });
     window.setTimeout(() => {
       if (!duration) ready();
-    }, 2500);
+    }, 8000);
 
     window.addEventListener(
       'resize',

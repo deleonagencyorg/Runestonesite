@@ -2,24 +2,46 @@
 interface Props {
   title: string;
   description?: string;
+  keywords?: string;
   canonical?: string;
+  image?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  locale?: 'en' | 'es';
 }
 
 const {
   title,
-  description = 'Southwest Florida general contractor for residential, multifamily, and commercial construction.',
+  description = 'Florida licensed general contractor CGC1540643 for custom homes, multifamily, and commercial construction in Naples, Fort Myers, Cape Coral, and Southwest Florida.',
+  keywords,
   canonical,
+  image,
+  noindex = false,
+  ogType = 'website',
+  locale = 'en',
 } = Astro.props;
 
-const fullTitle = title.includes('Runestone')
-  ? title
-  : `${title} | Runestone Construction`;
+const fullTitle = title.includes('Runestone') ? title : `${title} | Runestone Construction`;
+const ogLocale = locale === 'es' ? 'es_US' : 'en_US';
 ---
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
+<meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
+<meta name="author" content="Runestone Construction Corp." />
+<meta name="geo.region" content="US-FL" />
+<meta name="geo.placename" content="Fort Myers" />
 {canonical && <link rel="canonical" href={canonical} />}
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content="Runestone Construction" />
+<meta property="og:locale" content={ogLocale} />
+{canonical && <meta property="og:url" content={canonical} />}
+{image && <meta property="og:image" content={image} />}
+{image && <meta property="og:image:alt" content="Runestone Construction custom home in Southwest Florida" />}
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+{image && <meta name="twitter:image" content={image} />}
