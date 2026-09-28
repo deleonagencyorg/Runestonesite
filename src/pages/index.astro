@@ -1,16 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/atoms/Button.astro';
 import CtaGroup from '../components/molecules/CtaGroup.astro';
 import ProcessScrub from '../components/organisms/ProcessScrub.astro';
 import LeadForm from '../components/organisms/LeadForm';
+import { residenceGallery } from '../lib/gallery';
 import { site } from '../lib/site';
 import { getCollection } from 'astro:content';
 
-const projects = (await getCollection('projects'))
-  .filter((p) => p.data.featured)
-  .slice(0, 6);
+const preview = residenceGallery()[0];
 
-const testimonials = projects
+const testimonials = (await getCollection('projects'))
   .map((p) => p.data.testimonial)
   .filter(Boolean);
 ---
@@ -50,20 +50,33 @@ const testimonials = projects
     </div>
   </section>
 
-  <section class="section" data-testid="projects-strip">
-    <div class="wrap">
-      <p class="t-eyebrow">Projects</p>
-      <h2 class="t-h2">Selected work</h2>
-      <div class="cards">
-        {projects.map((project) => (
-          <a class="card" href={`/projects/${project.id}`}>
-            <div class="thumb" style={`background-image:url('${project.data.cover}')`}></div>
-            <h3 class="t-h3">{project.data.title}</h3>
-            <p class="t-small">
-              {project.data.location} · {project.data.year}
-            </p>
+  <section class="section" data-testid="gallery-section">
+    <div class="wrap gallery-home">
+      {
+        preview && (
+          <a class="shot" href="/gallery">
+            <img
+              src={preview.src}
+              alt={preview.alt}
+              width="1200"
+              height="800"
+              loading="lazy"
+              decoding="async"
+            />
           </a>
-        ))}
+        )
+      }
+      <div>
+        <p class="t-eyebrow">The residence</p>
+        <h2 class="t-h2">See the finish. Then price your own.</h2>
+        <p class="t-lead">
+          This Southwest Florida home is the standard we build to, from the aerial approach through every
+          room. Walk the gallery, then tell us about the project you want quoted.
+        </p>
+        <div class="actions">
+          <Button href="/gallery" variant="primary">View the gallery</Button>
+          <Button href="#lead-form" variant="secondary">Request a quote</Button>
+        </div>
       </div>
     </div>
   </section>
@@ -131,20 +144,30 @@ const testimonials = projects
     color: var(--brand-stone);
   }
 
-  .cards {
+  .gallery-home {
     display: grid;
     gap: 1.5rem;
-    margin-top: 2rem;
+    align-items: center;
   }
 
-  .card {
-    text-decoration: none;
+  .shot {
+    display: block;
   }
 
-  .thumb {
-    aspect-ratio: 4 / 3;
-    background: #2a2420 center / cover;
-    margin-bottom: 0.75rem;
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    background: #2a2420;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
   }
 
   .quotes {
@@ -176,8 +199,9 @@ const testimonials = projects
       grid-template-columns: 1fr 1fr;
     }
 
-    .cards {
-      grid-template-columns: repeat(3, 1fr);
+    .gallery-home {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2.5rem;
     }
   }
 </style>

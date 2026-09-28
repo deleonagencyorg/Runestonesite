@@ -12,8 +12,9 @@ const p = (path: string) => localizedPath(path, locale);
 <footer class="footer" data-testid="site-footer">
   <div class="wrap grid">
     <div>
-      <p class="t-eyebrow">Runestone Construction</p>
-      <p class="t-h4">{site.shortName}</p>
+      <a class="mark" href={p('/')}>
+        <img src="/brand/runestone-logo-on-dark.png" alt={site.shortName} width="695" height="215" />
+      </a>
       <p class="t-small">Florida Contractor License {site.license}</p>
       <p class="t-small">Serving {site.area}</p>
     </div>
@@ -28,13 +29,13 @@ const p = (path: string) => localizedPath(path, locale);
       <p class="t-h4">Explore</p>
       <p><a href={p('/about')}>About</a></p>
       <p><a href={p('/services')}>Services</a></p>
-      <p><a href={p('/projects')}>Projects</a></p>
+      <p><a href={p('/gallery')}>Gallery</a></p>
       <p><a href={p('/blog')}>Blog</a></p>
       <p><a href={p('/contact')}>Contact</a></p>
     </div>
   </div>
   <div class="wrap legal t-caption">
-    © {new Date().getFullYear()} {site.name}. All rights reserved.
+    © {new Date().getFullYear()} {site.name} All rights reserved.
   </div>
 </footer>
 
@@ -51,6 +52,17 @@ const p = (path: string) => localizedPath(path, locale);
 
   .footer a:hover {
     color: var(--sand);
+  }
+
+  .mark {
+    display: inline-block;
+    margin-bottom: 0.85rem;
+  }
+
+  .mark img {
+    display: block;
+    width: min(16rem, 100%);
+    height: auto;
   }
 
   .grid {

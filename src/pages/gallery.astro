@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/atoms/Button.astro';
+import ResidenceRail from '../components/organisms/ResidenceRail.astro';
+import { site } from '../lib/site';
+import { residenceGallery } from '../lib/gallery';
+
+const photos = residenceGallery();
+---
+
+<BaseLayout
+  title="Project gallery | Runestone Construction"
+  description="Walk through a finished Southwest Florida custom home, then request a quote for your own project."
+>
+  <section class="section" data-testid="residence-gallery">
+    <div class="wrap intro">
+      <p class="t-eyebrow">Project gallery</p>
+      <h1 class="t-h1">From the roof to the last room.</h1>
+      <p class="t-lead">
+        The sequence opens overhead, then moves through the rooms, the lanai, and the evening light.
+        Drag the photographs, or scroll sideways. When you want that finish on your own property, request
+        a quote.
+      </p>
+      <div class="actions">
+        <Button href={site.phoneHref} variant="primary">Call {site.phone}</Button>
+        <Button href="/contact" variant="secondary">Request a quote</Button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <ResidenceRail photos={photos} />
+    </div>
+
+    <div class="wrap close">
+      <h2 class="t-h2">Ready for a number?</h2>
+      <p class="t-lead">
+        Tell us the property, the use, and the timing. We will come back with the next step toward a quote.
+      </p>
+      <div class="actions">
+        <Button href="/contact" variant="primary">Request a quote</Button>
+        <Button href={site.phoneHref} variant="secondary">Call {site.phone}</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro,
+  .close {
+    max-width: 42rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .close {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid color-mix(in srgb, var(--sand) 40%, transparent);
+  }
+</style>

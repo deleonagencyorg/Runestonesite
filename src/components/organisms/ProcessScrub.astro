@@ -112,12 +112,21 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     let duration = 0;
     let heroOn = true;
 
+    function bitsOf(slide: HTMLElement) {
+      return slide.querySelectorAll<HTMLElement>('[data-anim], .title-inner');
+    }
+
+    function showBits(slide: HTMLElement) {
+      gsap.set(bitsOf(slide), { autoAlpha: 1, y: 0, yPercent: 0, scale: 1, clearProps: 'transform' });
+    }
+
     function hideSlides() {
       slides.forEach((slide) => {
         gsap.killTweensOf(slide);
-        gsap.killTweensOf(slide.querySelectorAll('[data-anim], .title-inner'));
+        gsap.killTweensOf(bitsOf(slide));
         slide.classList.remove('is-active');
         gsap.set(slide, { autoAlpha: 0 });
+        showBits(slide);
       });
       active = -1;
     }
@@ -145,60 +154,34 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     }
 
     function animateIn(slide: HTMLElement) {
-      const phase = slide.querySelector<HTMLElement>('[data-anim="phase"]');
-      const title = slide.querySelector<HTMLElement>('[data-anim="title"]');
-      const titleInner = slide.querySelector<HTMLElement>('.title-inner');
-      const desc = slide.querySelector<HTMLElement>('[data-anim="desc"]');
-      const cta = slide.querySelector<HTMLElement>('[data-anim="cta"]');
-
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out', overwrite: true } });
-
-      if (phase) {
-        tl.fromTo(
-          phase,
-          { autoAlpha: 0, y: 14, scale: 0.96 },
-          { autoAlpha: 1, y: 0, scale: 1, duration: 0.4 },
-          0,
-        );
-      }
-      if (title && titleInner) {
-        tl.fromTo(title, { autoAlpha: 1 }, { autoAlpha: 1, duration: 0.01 }, 0.05);
-        tl.fromTo(
-          titleInner,
-          { yPercent: 110 },
-          { yPercent: 0, duration: 0.7, ease: 'power3.out' },
-          0.08,
-        );
-      }
-      if (desc) {
-        tl.fromTo(
-          desc,
-          { autoAlpha: 0, y: mobile() ? 22 : 28 },
-          { autoAlpha: 1, y: 0, duration: 0.55 },
-          0.22,
-        );
-      }
-      if (cta) {
-        tl.fromTo(
-          cta,
-          { autoAlpha: 0, y: 18 },
-          { autoAlpha: 1, y: 0, duration: 0.45 },
-          0.34,
-        );
-      }
+      const bits = gsap.utils.toArray<HTMLElement>(bitsOf(slide));
+      gsap.killTweensOf(bits);
+      showBits(slide);
+      gsap.fromTo(
+        bits,
+        { y: mobile() ? 14 : 18 },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.55,
+          stagger: 0.05,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        },
+      );
     }
 
     function animateOut(slide: HTMLElement) {
-      const bits = slide.querySelectorAll('[data-anim], .title-inner');
+      const bits = bitsOf(slide);
       gsap.to(bits, {
         autoAlpha: 0,
-        y: -12,
-        duration: 0.25,
+        y: -10,
+        duration: 0.28,
         stagger: 0.02,
         ease: 'power2.in',
-        overwrite: true,
+        overwrite: 'auto',
       });
-      gsap.to(slide, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', overwrite: true });
+      gsap.to(slide, { autoAlpha: 0, duration: 0.28, ease: 'power2.in', overwrite: 'auto' });
     }
 
     function setSlide(index: number, animate = true) {
@@ -216,12 +199,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
 
         if (!animate || reduce) {
           gsap.set(slide, { autoAlpha: on ? 1 : 0 });
-          gsap.set(slide.querySelectorAll('[data-anim], .title-inner'), {
-            autoAlpha: 1,
-            y: 0,
-            yPercent: 0,
-            clearProps: on ? '' : undefined,
-          });
+          showBits(slide);
           return;
         }
 
@@ -289,7 +267,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
         start: 'top top',
         end: () => `+=${scrollLen()}`,
         pin: true,
-        scrub: mobile() ? 0.35 : 0.55,
+        scrub: mobile() ? 0.45 : 0.85,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => onProgress(self.progress),
@@ -332,7 +310,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     min-height: 32rem;
     overflow: hidden;
     background: #0a0908;
-    color: var(--paper);
+    color: #fff;
   }
 
   .film {
@@ -348,8 +326,8 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(105deg, rgb(0 0 0 / 58%) 0%, rgb(0 0 0 / 22%) 48%, rgb(0 0 0 / 28%) 100%),
-      linear-gradient(180deg, rgb(0 0 0 / 35%) 0%, transparent 35%, rgb(0 0 0 / 45%) 100%);
+      linear-gradient(100deg, rgb(0 0 0 / 62%) 0%, rgb(0 0 0 / 24%) 46%, rgb(0 0 0 / 30%) 100%),
+      linear-gradient(180deg, rgb(0 0 0 / 55%) 0%, rgb(0 0 0 / 12%) 28%, transparent 46%, rgb(0 0 0 / 50%) 100%);
     pointer-events: none;
   }
 
@@ -390,7 +368,8 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-weight: 500;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--sand);
+    color: #fff;
+    text-shadow: 0 2px 16px rgb(0 0 0 / 70%);
   }
 
   .hero-title {
@@ -400,6 +379,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-weight: 600;
     line-height: 1.05;
     letter-spacing: 0.04em;
+    color: #fff;
   }
 
   .hero-lead {
@@ -409,7 +389,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-size: var(--text-lead);
     font-weight: 300;
     line-height: 1.5;
-    color: color-mix(in srgb, var(--paper) 90%, transparent);
+    color: #fff;
   }
 
   .scroll-hint {
@@ -417,7 +397,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-size: var(--text-caption);
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--sand);
+    color: #fff;
   }
 
   .masthead {
@@ -441,7 +421,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-weight: 500;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--sand);
+    color: #fff;
   }
 
   .mast-title {
@@ -451,6 +431,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1.15;
+    color: #fff;
     text-shadow: 0 4px 28px rgb(0 0 0 / 45%);
   }
 
@@ -472,9 +453,10 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: clamp(1.25rem, 4vw, 3.5rem);
-    align-items: end;
+    grid-template-columns: minmax(0, 34rem);
+    justify-content: start;
+    align-content: end;
+    gap: 1.15rem;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -491,40 +473,42 @@ import CtaGroup from '../molecules/CtaGroup.astro';
   }
 
   .col-right {
-    justify-self: end;
-    width: min(100%, 28rem);
-    padding-bottom: 0.25rem;
+    justify-self: start;
+    width: 100%;
   }
 
   .phase {
     display: inline-flex;
     align-items: center;
     padding: 0.35rem 0.85rem;
-    border: 1px solid rgb(255 255 255 / 55%);
+    border: 1px solid #fff;
     border-radius: 999px;
     font-family: var(--font-sans);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--paper);
-    background: rgb(0 0 0 / 18%);
+    color: #fff;
+    background: rgb(0 0 0 / 28%);
     backdrop-filter: blur(6px);
   }
 
   .title {
-    margin: 1rem 0 0;
-    overflow: hidden;
+    margin: 0.85rem 0 0;
+    max-width: 100%;
   }
 
   .title-inner {
     display: block;
+    max-width: 100%;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5.6vw, 4.25rem);
+    font-size: clamp(1.85rem, 3.2vw, 3.05rem);
     font-weight: 600;
     letter-spacing: 0.01em;
-    line-height: 1.05;
+    line-height: 1.08;
     text-transform: uppercase;
+    text-wrap: balance;
+    color: #fff;
     text-shadow: 0 6px 32px rgb(0 0 0 / 45%);
   }
 
@@ -534,8 +518,8 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-size: clamp(0.95rem, 1.5vw, 1.125rem);
     font-weight: 300;
     line-height: 1.55;
-    color: color-mix(in srgb, var(--paper) 92%, transparent);
-    text-shadow: 0 2px 16px rgb(0 0 0 / 45%);
+    color: #fff;
+    text-shadow: 0 2px 16px rgb(0 0 0 / 55%);
   }
 
   .cta {
@@ -543,6 +527,22 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     flex-wrap: wrap;
     gap: 0.65rem;
     margin-top: 1.15rem;
+  }
+
+  .process :global(.btn.secondary),
+  .process :global(.btn.onDark) {
+    color: #fff;
+    border-color: #fff;
+    background: transparent;
+  }
+
+  .process :global(.btn.secondary:hover),
+  .process :global(.btn.secondary:focus-visible),
+  .process :global(.btn.onDark:hover),
+  .process :global(.btn.onDark:focus-visible) {
+    color: #fff;
+    border-color: #fff;
+    background: rgb(255 255 255 / 14%);
   }
 
   .foot {
@@ -558,13 +558,13 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     font-family: var(--font-sans);
     font-size: 0.75rem;
     letter-spacing: 0.08em;
-    color: color-mix(in srgb, var(--paper) 78%, transparent);
+    color: #fff;
   }
 
   .mouse {
     width: 1.05rem;
     height: 1.55rem;
-    border: 1.5px solid rgb(255 255 255 / 70%);
+    border: 1.5px solid #fff;
     border-radius: 999px;
     position: relative;
   }
@@ -615,7 +615,7 @@ import CtaGroup from '../molecules/CtaGroup.astro';
   .bar-fill {
     height: 100%;
     width: 100%;
-    background: color-mix(in srgb, var(--brand-stone) 80%, var(--sand));
+    background: #fff;
     transform: scaleX(0.04);
     transform-origin: left center;
   }
@@ -635,14 +635,8 @@ import CtaGroup from '../molecules/CtaGroup.astro';
     }
 
     .slide {
-      grid-template-columns: 1fr;
-      align-content: end;
-      gap: 1.25rem;
-    }
-
-    .col-right {
-      justify-self: stretch;
-      width: 100%;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
     }
 
     .title-inner {

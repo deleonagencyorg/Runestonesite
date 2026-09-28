@@ -11,7 +11,7 @@ const p = (path: string) => localizedPath(path, locale);
 const links = [
   { href: p('/about'), label: 'About' },
   { href: p('/services'), label: 'Services' },
-  { href: p('/projects'), label: 'Projects' },
+  { href: p('/gallery'), label: 'Gallery' },
   { href: p('/blog'), label: 'Blog' },
   { href: p('/contact'), label: 'Contact' },
 ];
@@ -19,14 +19,13 @@ const links = [
 
 <header class="header" data-testid="site-header">
   <div class="wrap bar">
-    <a class="brand" href={p('/')} aria-label={site.shortName}>
-      <span class="brand-mark">R</span>
-      <span class="brand-text">
-        <span class="name">Runestone</span>
-        <span class="sub">Construction</span>
-      </span>
+    <a class="brand" href={p('/')}>
+      <img src="/brand/runestone-logo.png" alt={site.shortName} width="695" height="215" />
     </a>
-    <nav class="nav" aria-label="Primary">
+    <button class="menu" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+      Menu
+    </button>
+    <nav class="nav" id="site-nav" aria-label="Primary" data-nav>
       {links.map((link) => (
         <a href={link.href}>{link.label}</a>
       ))}
@@ -34,6 +33,17 @@ const links = [
     <a class="phone" href={site.phoneHref}>{site.phone}</a>
   </div>
 </header>
+
+<script>
+  const header = document.querySelector('[data-testid="site-header"]');
+  const button = header?.querySelector<HTMLButtonElement>('[data-menu]');
+  const nav = header?.querySelector<HTMLElement>('[data-nav]');
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', open ? 'false' : 'true');
+    nav?.classList.toggle('is-open', !open);
+  });
+</script>
 
 <style>
   .header {
@@ -56,38 +66,46 @@ const links = [
   .brand {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
     text-decoration: none;
+    min-width: 0;
   }
 
-  .brand-mark {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--brand-stone);
-    line-height: 1;
-  }
-
-  .name {
+  .brand img {
     display: block;
-    font-family: var(--font-display);
-    font-size: 0.95rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    width: auto;
+    height: 2.55rem;
+  }
+
+  .menu {
+    margin-left: auto;
+    border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
     font-weight: 600;
-  }
-
-  .sub {
-    display: block;
-    font-size: 0.65rem;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--sand);
+    cursor: pointer;
   }
 
   .nav {
     display: none;
     gap: 1.25rem;
+  }
+
+  .nav.is-open {
+    display: grid;
+    position: absolute;
+    z-index: 2;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 0.85rem 1rem 1.1rem;
+    background: var(--paper);
+    border-bottom: 1px solid color-mix(in srgb, var(--sand) 35%, transparent);
+    box-shadow: 0 16px 28px rgb(0 0 0 / 8%);
   }
 
   .nav a {
@@ -111,8 +129,21 @@ const links = [
   }
 
   @media (min-width: 900px) {
-    .nav {
+    .brand img {
+      height: 3.15rem;
+    }
+
+    .menu {
+      display: none;
+    }
+
+    .nav,
+    .nav.is-open {
       display: flex;
+      position: static;
+      padding: 0;
+      background: none;
+      border: 0;
     }
   }
 </style>

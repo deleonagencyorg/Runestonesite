@@ -1,0 +1,239 @@
+---
+import type { GalleryPhoto } from '../../lib/gallery';
+
+interface Props {
+  photos: GalleryPhoto[];
+}
+
+const { photos } = Astro.props;
+const total = String(photos.length).padStart(2, '0');
+---
+
+<div class="rail" data-residence-rail data-testid="residence-rail" tabindex="0">
+  <div class="viewport" data-gallery-viewport>
+    <div class="track">
+      {
+        photos.map((photo, index) => (
+          <figure class="slide" data-gallery-slide data-label={photo.alt}>
+            <img
+              src={photo.src}
+              alt={photo.alt}
+              width="1600"
+              height="1067"
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
+              draggable="false"
+            />
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="meta">
+    <p class="count" data-gallery-index>01 / {total}</p>
+    <p class="caption" data-gallery-caption data-testid="gallery-caption">{photos[0]?.alt}</p>
+    <div class="nav">
+      <button type="button" data-gallery-prev aria-label="Previous photograph">Prev</button>
+      <button type="button" data-gallery-next aria-label="Next photograph">Next</button>
+    </div>
+  </div>
+  <div class="bar" aria-hidden="true">
+    <div class="bar-fill" data-gallery-progress></div>
+  </div>
+  <p class="hint">Drag or scroll sideways</p>
+</div>
+
+<script>
+  import EmblaCarousel from 'embla-carousel';
+  import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
+
+  function mountRail(root: HTMLElement) {
+    const viewport = root.querySelector<HTMLElement>('[data-gallery-viewport]');
+    if (!viewport) return;
+
+    const caption = root.querySelector<HTMLElement>('[data-gallery-caption]');
+    const indexEl = root.querySelector<HTMLElement>('[data-gallery-index]');
+    const progress = root.querySelector<HTMLElement>('[data-gallery-progress]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-gallery-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-gallery-next]');
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-gallery-slide]')];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const embla = EmblaCarousel(
+      viewport,
+      {
+        align: 'start',
+        containScroll: 'trimSnaps',
+        dragFree: false,
+        duration: reduce ? 0 : 32,
+      },
+      reduce ? [] : [WheelGesturesPlugin({ forceWheelAxis: 'x' })],
+    );
+
+    const render = () => {
+      const index = embla.selectedScrollSnap();
+      const slide = slides[index];
+      if (caption) caption.textContent = slide?.dataset.label ?? '';
+      if (indexEl) {
+        const current = String(index + 1).padStart(2, '0');
+        const total = String(slides.length).padStart(2, '0');
+        indexEl.textContent = `${current} / ${total}`;
+      }
+      if (progress) {
+        const amount = slides.length ? (index + 1) / slides.length : 0;
+        progress.style.transform = `scaleX(${Math.max(0.02, amount)})`;
+      }
+      if (prev) prev.disabled = !embla.canScrollPrev();
+      if (next) next.disabled = !embla.canScrollNext();
+    };
+
+    prev?.addEventListener('click', () => embla.scrollPrev());
+    next?.addEventListener('click', () => embla.scrollNext());
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        embla.scrollNext();
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        embla.scrollPrev();
+      }
+    });
+
+    embla.on('select', render);
+    embla.on('reInit', render);
+    render();
+    root.dataset.galleryReady = 'true';
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-residence-rail]').forEach(mountRail);
+</script>
+
+<style>
+  .rail {
+    margin-top: 2.5rem;
+    outline: none;
+  }
+
+  .rail:focus-visible {
+    outline: 1px solid var(--sand);
+    outline-offset: 6px;
+  }
+
+  .viewport {
+    overflow: hidden;
+    cursor: grab;
+  }
+
+  .viewport:active {
+    cursor: grabbing;
+  }
+
+  .track {
+    display: flex;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  .slide {
+    flex: 0 0 86%;
+    min-width: 0;
+    margin: 0;
+    padding-right: 0.85rem;
+  }
+
+  .slide img {
+    display: block;
+    width: 100%;
+    height: min(68vh, 40rem);
+    object-fit: cover;
+    background: #2a2420;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    margin-top: 1rem;
+  }
+
+  .count,
+  .caption,
+  .hint {
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  .count {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    color: var(--sand);
+  }
+
+  .caption {
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .nav {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .nav button {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .nav button:hover:not(:disabled),
+  .nav button:focus-visible:not(:disabled) {
+    color: var(--brand-stone);
+  }
+
+  .bar {
+    height: 1px;
+    margin-top: 0.85rem;
+    background: color-mix(in srgb, var(--ink) 16%, transparent);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--ink);
+    transform: scaleX(0.02);
+    transform-origin: left center;
+  }
+
+  .hint {
+    margin-top: 0.65rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--stone-muted, #6b6560);
+  }
+
+  @media (min-width: 768px) {
+    .slide {
+      flex-basis: 68%;
+      padding-right: 1.25rem;
+    }
+  }
+</style>
