@@ -45,7 +45,7 @@ test.describe('Runestone smoke', () => {
     const images = page.getByTestId('residence-gallery').locator('img');
     await expect(images.first()).toHaveAttribute('alt', /Aerial Front Exterior 2$/i);
     await expect(images.nth(10)).toHaveAttribute('alt', /Aerial Rear Exterior 3 - marker/i);
-    await expect(images.nth(11)).toHaveAttribute('alt', /Front Exterior 1 of 3 -Dusk/i);
+    await expect(images.nth(11)).toHaveAttribute('alt', /Aerial Front Exterior 1$/i);
     await expect(page.getByTestId('residence-rail')).toHaveAttribute('data-gallery-ready', 'true');
     await expect(page.getByTestId('gallery-caption')).toHaveText(/Aerial Front Exterior 2$/i);
     await page.getByRole('button', { name: 'Next photograph' }).click();

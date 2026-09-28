@@ -13,12 +13,12 @@ import CtaGroup from '../molecules/CtaGroup.astro';
   <video
     class="film"
     data-process-video
+    src="/media/process-placeholder.mp4"
+    poster="/media/process-poster.jpg"
     muted
     playsinline
     preload="auto"
-    poster="/media/process-poster.svg"
   >
-    <source src="/media/process-placeholder.mp4" type="video/mp4" />
   </video>
 
   <div class="veil" aria-hidden="true"></div>
@@ -28,8 +28,8 @@ import CtaGroup from '../molecules/CtaGroup.astro';
       <p class="hero-kicker">Southwest Florida General Contractor</p>
       <h1 class="hero-title">Build with purpose. Execute with precision.</h1>
       <p class="hero-lead">
-        High-quality residential, multifamily, and commercial construction from planning through
-        completion.
+        Licensed general contractor for custom homes, multifamily, and commercial work in Naples,
+        Fort Myers, Cape Coral, and across Southwest Florida.
       </p>
       <CtaGroup formHref="#lead-form" />
       <p class="scroll-hint" aria-hidden="true">Scroll to explore the build</p>
